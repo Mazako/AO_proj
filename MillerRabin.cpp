@@ -1,14 +1,16 @@
 #include <cstdint>
 #include <iostream>
+#include <thread>
 #include <vector>
-#include "miller-rabin/SingleThreadedMillerRabinTest.h"
+#include "SingleThreadedMillerRabinTest.h"
+#include "Utils.h"
 
 void run_tests(const std::vector<uint64_t>& numbers, int iterations) {
     for (auto number : numbers) {
         SingleThreadedMillerRabinTest test(number, iterations);
-        const bool result = test.is_prime();
-
-        std::cout << "Number " << number << (result ? " PRIME" : " COMPOSITE") << std::endl;
+        const auto [time, value] = Utils::measure_time<bool>([test]()-> bool {return test.is_prime();});
+        std::cout << "Number " << number << (value ? " PRIME" : " COMPOSITE") << std::endl;
+        std::cout << "Time: " << time << " ns\n";
     }
 }
 

@@ -3,6 +3,11 @@ project(MillerRabin)
 
 set(CMAKE_CXX_STANDARD 20)
 
+include_directories(
+        helper
+        miller-rabin
+)
+
 add_executable(MillerRabin MillerRabin.cpp
         helper/Utils.cpp
         helper/Utils.h

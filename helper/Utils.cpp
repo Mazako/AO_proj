@@ -1,5 +1,8 @@
 #include "Utils.h"
 
+#include <chrono>
+#include <random>
+
 uint64_t Utils::modular_pow(uint64_t base, uint64_t exponent, uint64_t modulus) {
     uint64_t result = 1;
     base %= modulus;
