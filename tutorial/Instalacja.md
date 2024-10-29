@@ -21,7 +21,7 @@ C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.3412
 potrzebuje tego kompilator CUDA.
 
 ## Jak sprawdzić czy działa?
-Możemy sobie zrobić podstawowy goły program w C++ (nazwa pliku: main.cu):
+Możemy sobie zrobić podstawowy goły program (nazwa pliku: main.cu):
 
 ```cpp
 #include <stdio.h>
