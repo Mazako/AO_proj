@@ -1,0 +1,4 @@
+nvcc -o MillerRabin MillerRabin.cu
+
+.\MillerRabin.exe
+
