@@ -1,16 +1,17 @@
-#include <iostream>
-#include <cuda_runtime.h>
-#include "helper/Utils.cu"
+#include "Utils.h"
+#include "MillerRabinExecutor.cuh"
 
-// Kernal CUDA dla testu Millera-Rabina
+__device__ uint64_t cudaSpecificRandom(curandState* state, uint64_t min, uint64_t max) {
+    return curand(state) % (max - min + 1) + min;
+}
+
 __global__ void miller_rabin_kernel(uint64_t* number, int iterations, bool* result, curandState* states) {
     int idx = threadIdx.x + blockIdx.x * blockDim.x;
     if (idx >= iterations) return;
 
-    // Inicjalizacja generatora losowego dla ka¿dego w¹tku
     curand_init(clock64(), idx, 0, &states[idx]);
 
-    uint64_t base = Utils::get_random_number(&states[idx], 2, *number - 2);
+    const uint64_t base = cudaSpecificRandom(&states[idx], 2, *number - 2);
     uint64_t exponent_of_two, odd_part;
     Utils::decompose_number(*number - 1, exponent_of_two, odd_part);
 
@@ -37,7 +38,7 @@ bool miller_rabin_test_gpu(uint64_t number, int iterations) {
     bool* d_results, * h_results;
     h_results = new bool[iterations];
 
-    // Alokacja pamiêci na GPU
+    // Alokacja pamiï¿½ci na GPU
     cudaMalloc((void**)&d_number, sizeof(uint64_t));
     cudaMalloc((void**)&d_results, iterations * sizeof(bool));
     curandState* d_states;
@@ -46,12 +47,12 @@ bool miller_rabin_test_gpu(uint64_t number, int iterations) {
     // Przekazywanie liczby do GPU
     cudaMemcpy(d_number, &number, sizeof(uint64_t), cudaMemcpyHostToDevice);
 
-    // Ustalanie liczby bloków i w¹tków
+    // Ustalanie liczby blokï¿½w i wï¿½tkï¿½w
     int threads_per_block = 256;
     int blocks_per_grid = (iterations + threads_per_block - 1) / threads_per_block;
     miller_rabin_kernel << <blocks_per_grid, threads_per_block >> > (d_number, iterations, d_results, d_states);
 
-    // Kopiowanie wyników z GPU
+    // Kopiowanie wynikï¿½w z GPU
     cudaMemcpy(h_results, d_results, iterations * sizeof(bool), cudaMemcpyDeviceToHost);
 
     bool is_prime = true;
@@ -62,7 +63,7 @@ bool miller_rabin_test_gpu(uint64_t number, int iterations) {
         }
     }
 
-    // Zwolnienie pamiêci
+    // Zwolnienie pamiï¿½ci
     cudaFree(d_number);
     cudaFree(d_results);
     cudaFree(d_states);
