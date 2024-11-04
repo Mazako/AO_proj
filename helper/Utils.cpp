@@ -1,5 +1,5 @@
 #include "Utils.h"
-
+#include "gtest/gtest.h"
 #include <random>
 
 uint64_t Utils::modular_pow(uint64_t base, uint64_t exponent, uint64_t modulus) {
@@ -19,7 +19,7 @@ uint64_t Utils::modular_pow(uint64_t base, uint64_t exponent, uint64_t modulus) 
 void Utils::decompose_number(uint64_t number, uint64_t& power_of_two_exponent, uint64_t& odd_component) {
     power_of_two_exponent = 0;
     odd_component = number;
-    while ((odd_component & 1) == 0) {
+    while ((odd_component & 1) == 0) {    // only last bit of odd_component is being compared to 1 in AND logic operation
         odd_component >>= 1;
         ++power_of_two_exponent;
     }

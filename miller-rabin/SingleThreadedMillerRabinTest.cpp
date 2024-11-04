@@ -1,5 +1,6 @@
 #include "SingleThreadedMillerRabinTest.h"
 #include "Utils.h"
+#include "gtest/gtest.h"
 
 SingleThreadedMillerRabinTest::SingleThreadedMillerRabinTest(uint64_t number_to_test, int iterations)
     : number(number_to_test), iterations(iterations) {}
