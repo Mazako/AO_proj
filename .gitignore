@@ -1,3 +1,5 @@
 .idea
 cmake-build-debug\
 third_party/googletest/
+build
+cmake-build-release-mingw
