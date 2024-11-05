@@ -1,13 +1,12 @@
 #include "Utils.h"
 #include <random>
 
-
 __host__ __device__ uint64_t Utils::overflow_save_mod_mul(uint64_t a, uint64_t b, uint64_t m) {
     uint64_t res = 0;
     uint64_t temp_b;
 
     if (b >= m) {
-        if (m > UINT64_MAX / 2u)
+        if (m > UINT128_MAX / 2u)
             b -= m;
         else
             b %= m;
@@ -30,10 +29,13 @@ __host__ __device__ uint64_t Utils::overflow_save_mod_mul(uint64_t a, uint64_t b
 }
 
 __host__ __device__ uint64_t Utils::mod_mul(uint64_t a, uint64_t b, uint64_t m) {
-    if (a > UINT64_MAX / b) {
-        return overflow_save_mod_mul(a, b, m);
+    auto a128 = static_cast<__uint128_t>(a);
+    auto b128 = static_cast<__uint128_t>(b);
+
+    if (a128 > UINT128_MAX / b128) {
+        return overflow_save_mod_mul(a128, b128, m);
     }
-    return a * b % m;
+    return a128 * b128 % m;
 }
 
 __host__ __device__ uint64_t Utils::modular_pow(uint64_t base, uint64_t exp, uint64_t mod) {

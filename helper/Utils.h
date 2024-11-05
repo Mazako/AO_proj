@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <functional>
 #include <cuda_runtime.h>
+#define UINT128_MAX ((__uint128_t(1) << 127) - 1)
 
 
 class Utils {
