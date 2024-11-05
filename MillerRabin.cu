@@ -36,12 +36,12 @@ int main() {
             999999000000000003,     // composite
             999999999989,           // prime
             67280421310721,         // prime
-            18446744073709551557,   // prime
+            18446744073709551557,   // prime (biggest 64bit prime)
             2305843009213693951,    // prime
             179424673,              // prime
             32452843,               // prime
             15485867,               // prime
-            10000000019             // prime
+            10000000019,            // prime
     };
 
     std::cout << "----------GPU RNG generator tests----------" << std::endl;
