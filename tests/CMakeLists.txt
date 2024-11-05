@@ -1,7 +1,9 @@
 add_executable(miller_rabin_test
         miller_rabin_test.cpp
         ../miller-rabin/SingleThreadedMillerRabinTest.cpp
-        ../helper/Utils.cpp
+        ../miller-rabin/SingleThreadedMillerRabinTest.h
+        ../helper/Utils.cu
+        ../helper/Utils.h
         )
 
 

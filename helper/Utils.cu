@@ -1,17 +1,50 @@
 #include "Utils.h"
-#include "gtest/gtest.h"
 #include <random>
 
-__host__ __device__ uint64_t Utils::modular_pow(uint64_t base, uint64_t exponent, uint64_t modulus) {
-    uint64_t result = 1;
-    base %= modulus;
 
-    while (exponent > 0) {
-        if (exponent % 2 == 1) {
-            result = result * base % modulus;
+__host__ __device__ uint64_t Utils::overflow_save_mod_mul(uint64_t a, uint64_t b, uint64_t m) {
+    uint64_t res = 0;
+    uint64_t temp_b;
+
+    if (b >= m) {
+        if (m > UINT64_MAX / 2u)
+            b -= m;
+        else
+            b %= m;
+    }
+
+    while (a != 0) {
+        if (a & 1) {
+            if (b >= m - res)
+                res -= m;
+            res += b;
         }
-        base = base * base % modulus;
-        exponent /= 2;
+        a >>= 1;
+
+        temp_b = b;
+        if (b >= m - b)
+            temp_b -= m;
+        b += temp_b;
+    }
+    return res;
+}
+
+__host__ __device__ uint64_t Utils::mod_mul(uint64_t a, uint64_t b, uint64_t m) {
+    if (a > UINT64_MAX / b) {
+        return overflow_save_mod_mul(a, b, m);
+    }
+    return a * b % m;
+}
+
+__host__ __device__ uint64_t Utils::modular_pow(uint64_t base, uint64_t exp, uint64_t mod) {
+    uint64_t result = 1;
+    base %= mod;
+    while (exp > 0) {
+        if (exp & 1) {
+            result = mod_mul(result, base, mod);
+        }
+        base = mod_mul(base, base, mod);
+        exp >>= 1;
     }
     return result;
 }
