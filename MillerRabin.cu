@@ -1,6 +1,7 @@
 #include <cstdint>
 #include <iostream>
 #include <vector>
+#include <cuda_runtime.h>
 
 #include "MillerRabinExecutor.cuh"
 #include "SingleThreadedMillerRabinTest.h"
@@ -13,14 +14,36 @@ void run_tests(const std::vector<uint64_t>& numbers, int iterations) {
         SingleThreadedMillerRabinTest test(number, iterations);
         const auto [time, value] = Utils::measure_time<bool>([test]()-> bool {return test.is_prime();});
         std::cout << "Number " << number << (value ? " PRIME" : " COMPOSITE") << std::endl;
-        std::cout << "Time: " << time << " ns\n";
+        std::cout << "Time: " << time << " ms\n";
     }
 
     std::cout << "----------GPU TESTS----------" << std::endl;
 
     for (unsigned long long number : numbers) {
+
+        // CUDA events do pomiaru czasu na GPU
+        cudaEvent_t start, stop;
+        cudaEventCreate(&start);
+        cudaEventCreate(&stop);
+
+        cudaEventRecord(start);
+
         const bool result = miller_rabin_test_gpu(number, iterations);
+
+        cudaEventRecord(stop);
+        cudaEventSynchronize(stop);
+
+        float elapsedTime;
+        cudaEventElapsedTime(&elapsedTime, start, stop);
+
+        int roundedTime = static_cast<int>(std::round(elapsedTime));
+
         std::cout << "GPU: Number " << number << (result ? " PRIME" : " COMPOSITE") << std::endl;
+        std::cout << "Time: " << roundedTime << " ms\n";
+
+        // Zwalnianie zasobów CUDA
+        cudaEventDestroy(start);
+        cudaEventDestroy(stop);
     }
 }
 
@@ -44,8 +67,8 @@ int main() {
             10000000019             // prime
     };
 
-    std::cout << "----------GPU RNG generator tests----------" << std::endl;
-    warmupTestRandomWarmupPerformer(10, 1, 1000000);
+    // std::cout << "----------GPU RNG generator tests----------" << std::endl;
+    // warmupTestRandomWarmupPerformer(10, 1, 1000000);
 
     const int iterations = 100000;
     run_tests(test_numbers, iterations);

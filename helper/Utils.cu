@@ -1,7 +1,6 @@
 #include "Utils.h"
 #include <random>
 
-
 __host__ __device__ uint64_t Utils::overflow_save_mod_mul(uint64_t a, uint64_t b, uint64_t m) {
     uint64_t res = 0;
     uint64_t temp_b;
@@ -60,6 +59,7 @@ __host__ __device__ void Utils::decompose_number(uint64_t number, uint64_t &powe
 }
 
 uint64_t Utils::get_random_number(uint64_t min, uint64_t max) {
+    if (min > max) std::swap(min, max);
     std::random_device random_device;
     std::mt19937_64 generator(random_device());
     std::uniform_int_distribution<uint64_t> distribution(min, max);

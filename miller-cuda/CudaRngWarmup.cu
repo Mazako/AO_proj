@@ -12,17 +12,17 @@ __global__ void warmupTestRandomNumberKernel(uint64_t *results, int num_samples,
         curandState state;
         curand_init(seed, idx, 0, &state);
 
-        // U�yj funkcji do generowania losowej liczby
+        // Użyj funkcji do generowania losowej liczby
         results[idx] = cudaSpecificRandom(&state, min, max);
     }
 }
 
 void warmupTestRandomWarmupPerformer(int num_samples, uint64_t min, uint64_t max) {
-    // Alokacja pami�ci
+    // Alokacja pamięci
     uint64_t *d_results;
     cudaMalloc(&d_results, num_samples * sizeof(uint64_t));
 
-    // Wykonanie j�dra
+    // Wykonanie jądra
     int threads_per_block = 256;
     int blocks = (num_samples + threads_per_block - 1) / threads_per_block;
     warmupTestRandomNumberKernel << <blocks, threads_per_block >> >(d_results, num_samples, min, max, time(NULL));

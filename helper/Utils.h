@@ -6,7 +6,6 @@
 #include <functional>
 #include <cuda_runtime.h>
 
-
 class Utils {
 public:
     __host__ __device__ static uint64_t overflow_save_mod_mul(uint64_t a, uint64_t b, uint64_t m);

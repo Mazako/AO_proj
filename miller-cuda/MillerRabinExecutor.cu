@@ -2,6 +2,11 @@
 #include "MillerRabinExecutor.cuh"
 
 __device__ uint64_t cudaSpecificRandom(curandState* state, uint64_t min, uint64_t max) {
+
+    // Zwrócenie min gdy zakres jest niewłaściwy
+    if (min > max) {
+        return min;
+    }
     return curand(state) % (max - min + 1) + min;
 }
 
@@ -34,6 +39,12 @@ __global__ void miller_rabin_kernel(uint64_t* number, int iterations, bool* resu
 }
 
 bool miller_rabin_test_gpu(uint64_t number, int iterations) {
+
+    // Szybka obsługa małych liczb
+    if (number <= 3) {
+        return number > 1;
+    }
+
     uint64_t* d_number;
     bool* d_results, * h_results;
     h_results = new bool[iterations];

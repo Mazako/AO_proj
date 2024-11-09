@@ -8,9 +8,6 @@ set(CMAKE_CUDA_STANDARD 20)
 add_subdirectory(third_party/googletest)
 message(STATUS "Google Test has been added to the build.")
 
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CUDA_STANDARD 20)
-
 include_directories(
         helper
         miller-rabin
@@ -45,4 +42,5 @@ target_include_directories(MillerRabin PRIVATE
 
 # Dodanie testów
 add_subdirectory(tests)
-add_dependencies(miller_rabin_test gtest gtest_main)
+add_subdirectory(tests-cuda)
+add_dependencies(miller_rabin_test miller_rabin_gpu_test gtest gtest_main)
