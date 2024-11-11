@@ -28,6 +28,8 @@ add_executable(MillerRabin MillerRabin.cu
         miller-cuda/MillerRabinExecutor.cuh
         miller-cuda/CudaRngWarmup.cuh
         miller-cuda/CudaRngWarmup.cu
+        miller-cuda/MillerRabinMultipleNumberExecutor.cuh
+        miller-cuda/MillerRabinMultipleNumberExecutor.cu
 )
 
 set_target_properties(MillerRabin PROPERTIES

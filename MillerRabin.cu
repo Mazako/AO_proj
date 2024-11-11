@@ -6,6 +6,7 @@
 #include "SingleThreadedMillerRabinTest.h"
 #include "Utils.h"
 #include "CudaRngWarmup.cuh"
+#include "MillerRabinMultipleNumberExecutor.cuh"
 
 void run_tests(const std::vector<uint64_t>& numbers, int iterations) {
     std::cout << "----------CPU TESTS----------" << std::endl;
@@ -22,6 +23,22 @@ void run_tests(const std::vector<uint64_t>& numbers, int iterations) {
         const bool result = miller_rabin_test_gpu(number, iterations);
         std::cout << "GPU: Number " << number << (result ? " PRIME" : " COMPOSITE") << std::endl;
     }
+}
+
+void run_multi_gpu_test(const std::vector<uint64_t>& numbers, int iterations) {
+    uint64_t* nums_ptr = new uint64_t[numbers.size()];
+
+    for (int i = 0; i < numbers.size(); i++) {
+        nums_ptr[i] = numbers[i];
+    }
+
+    auto results = miller_rabin_test_gpu_multiple(nums_ptr, numbers.size(), iterations);
+
+    for (int i = 0; i < numbers.size(); i++) {
+        std::cout << nums_ptr[i] << ": " << (results[i] ? "PRIME" : "COMPOSITE") << std::endl;
+    }
+
+    delete nums_ptr;
 }
 
 int main() {
@@ -48,7 +65,7 @@ int main() {
     warmupTestRandomWarmupPerformer(10, 1, 1000000);
 
     const int iterations = 100000;
-    run_tests(test_numbers, iterations);
-
+    // run_tests(test_numbers, iterations);
+    run_multi_gpu_test(test_numbers, iterations);
     return 0;
 }
