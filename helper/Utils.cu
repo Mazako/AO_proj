@@ -1,4 +1,7 @@
 #include "Utils.h"
+
+#include <fstream>
+#include <iostream>
 #include <random>
 
 __host__ __device__ uint64_t Utils::overflow_save_mod_mul(uint64_t a, uint64_t b, uint64_t m) {
@@ -90,4 +93,25 @@ __host__ __device__ bool Utils::miller_rabin_test_iteration(uint64_t candidate, 
         return true;
 
     return !check_composite(candidate, current_value, power_of_two_exponent);
+}
+
+uint64_t* Utils::read_file(const std::string& path, int size) {
+    std::ifstream file(path);
+    if (!file.is_open()) {
+        std::cerr << "File read err" << std::endl;
+        return nullptr;
+    }
+
+    uint64_t* results = new uint64_t[size];
+
+    std::string line;
+    int i = 0;
+    while (std::getline(file, line) && i < size) {
+        const uint64_t number = std::stoull(line);
+        results[i++] = number;
+    }
+
+    file.close();
+    return results;
+
 }
