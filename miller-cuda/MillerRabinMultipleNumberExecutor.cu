@@ -22,7 +22,7 @@ __global__ void test_kernel(uint64_t* numbers, int* results, curandState* curand
     int iteration_idx = threadIdx.x + blockIdx.x * blockDim.x;
 
 
-    if (number_idx >= n || iteration_idx >= iterations) {
+    if (number_idx >= n || iteration_idx >= iterations || results[number_idx] == 0) {
         return;
     }
 
@@ -62,7 +62,7 @@ int* miller_rabin_test_gpu_multiple(uint64_t* numbers, int n, int iterations, in
     cudaMalloc(&d_results, results_size);
     cudaMalloc(&d_curand_states, n * iterations * sizeof(curandState));
 
-    cudaMemcpy(&d_numbers, &numbers, results_size, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_numbers, numbers, results_size, cudaMemcpyHostToDevice);
 
     init_curand_state_kernel<<< ((n * iterations) + threads_per_block - 1) / threads_per_block, threads_per_block>>>(d_curand_states, d_results, n, iterations);
     cudaDeviceSynchronize();
@@ -71,10 +71,10 @@ int* miller_rabin_test_gpu_multiple(uint64_t* numbers, int n, int iterations, in
     test_kernel <<<blockDim, threads_per_block>>>(d_numbers, d_results, d_curand_states, n, iterations);
     cudaDeviceSynchronize();
 
-    cudaMemcpy(&h_results, &d_results, results_size, cudaMemcpyDeviceToHost);
+    cudaMemcpy(h_results, d_results, results_size, cudaMemcpyDeviceToHost);
 
-    cudaFree(&d_numbers);
-    cudaFree(&d_results);
-    cudaFree(&d_curand_states);
+    cudaFree(d_numbers);
+    cudaFree(d_results);
+    cudaFree(d_curand_states);
     return h_results;
 }

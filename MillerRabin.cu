@@ -14,15 +14,28 @@ void run_tests(const std::vector<uint64_t>& numbers, int iterations) {
         SingleThreadedMillerRabinTest test(number, iterations);
         const auto [time, value] = Utils::measure_time<bool>([test]()-> bool {return test.is_prime();});
         std::cout << "Number " << number << (value ? " PRIME" : " COMPOSITE") << std::endl;
-        std::cout << "Time: " << time << " ns\n";
+        std::cout << "Time: " << time << " ms\n";
     }
 
     std::cout << "----------GPU TESTS----------" << std::endl;
+    bool* results = new bool[numbers.size()];
 
-    for (unsigned long long number : numbers) {
-        const bool result = miller_rabin_test_gpu(number, iterations);
-        std::cout << "GPU: Number " << number << (result ? " PRIME" : " COMPOSITE") << std::endl;
+    const auto [time, _] = Utils::measure_time<void*>([numbers, iterations, results] ()->void* {
+        void* r = nullptr;
+        for (int i = 0; i < numbers.size(); i++) {
+            const bool result = miller_rabin_test_gpu(numbers[i], iterations);
+            results[i] = result;
+        }
+        return r;
+
+    });
+
+    std::cout << "TIME: " << time << " ms\n";
+    for (int i = 0; i < numbers.size(); i++) {
+        std::cout << "GPU: Number " << numbers[i] << (results[i] ? " PRIME" : " COMPOSITE") << std::endl;
     }
+
+    delete results;
 }
 
 void run_multi_gpu_test(const std::vector<uint64_t>& numbers, int iterations) {
@@ -32,7 +45,9 @@ void run_multi_gpu_test(const std::vector<uint64_t>& numbers, int iterations) {
         nums_ptr[i] = numbers[i];
     }
 
-    auto results = miller_rabin_test_gpu_multiple(nums_ptr, numbers.size(), iterations);
+    const auto [time, results] = Utils::measure_time<int*>([nums_ptr, numbers, iterations]()->int* {return miller_rabin_test_gpu_multiple(nums_ptr, numbers.size(), iterations);});
+
+    std::cout << "TIME: " << time << " ms\n";
 
     for (int i = 0; i < numbers.size(); i++) {
         std::cout << nums_ptr[i] << ": " << (results[i] ? "PRIME" : "COMPOSITE") << std::endl;
@@ -65,7 +80,10 @@ int main() {
     warmupTestRandomWarmupPerformer(10, 1, 1000000);
 
     const int iterations = 100000;
-    // run_tests(test_numbers, iterations);
+    run_tests(test_numbers, iterations);
+
+    std::cout << "------------MultiGpu tests-------------\n";
+
     run_multi_gpu_test(test_numbers, iterations);
     return 0;
 }
