@@ -57,11 +57,19 @@ void run_multi_gpu_test(const std::vector<uint64_t>& numbers, int iterations) {
 }
 
 
-void run_multi_gpu_test_from_file(const std::string& filename, int size, int iterations) {
+void run_multi_gpu_test_from_file(const std::string& filename, int size, int iterations, bool multi) {
     auto nums = Utils::read_file(filename, size);
-    const auto [time, results] = Utils::measure_time<int*>([nums, size, iterations] ()->int*
+    const auto [time, results] = Utils::measure_time<int*>([nums, size, iterations, multi] ()->int*
     {
-        return miller_rabin_test_gpu_multiple(nums, size, iterations);
+        if (multi) {
+            return miller_rabin_test_gpu_multiple(nums, size, iterations);
+        }
+        int* results = new int[size];
+        for (int i = 0; i < size; i++) {
+            results[i] = miller_rabin_test_gpu(nums[i], iterations) ? 1 : 0;
+            i++;
+        }
+        return results;
     });
 
     std::cout << "TIME: " << time << " ms\n";
@@ -97,14 +105,17 @@ int main() {
     std::cout << "----------GPU RNG generator tests----------" << std::endl;
     warmupTestRandomWarmupPerformer(10, 1, 1000000);
 
-    const int iterations = 10000;
+    const int iterations = 1000;
     run_tests(test_numbers, iterations);
 
     std::cout << "------------MultiGpu tests-------------\n";
     run_multi_gpu_test(test_numbers, iterations);
 
     std::cout << "--------------MultiGpu for 2700 primes---------\n";
-    run_multi_gpu_test_from_file("../file_samples/2700_sample.txt", 2700, iterations);
+    run_multi_gpu_test_from_file("../file_samples/2700_sample.txt", 2700, iterations, true);
+
+    std::cout << "------------GPU for 2700 primes----------\n";
+    run_multi_gpu_test_from_file("../file_samples/2700_sample.txt", 2700, iterations, false);
 
     return 0;
 }
