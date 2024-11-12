@@ -3,6 +3,15 @@
 Szczegółowa dokumentacja projektu jest dostępna pod adresem:
 [Projekt na Overleaf](https://www.overleaf.com/project/671cdec1be5005f658edc4f1)
 
+## UWAGA
+JECHANE JEST NA LINUX OD 12.11.2024
+
+TERAZ TRZEBA (OCZYWIŚCIE PO ZAINSTALOWANIU CUDA NA LINUX) PODMIENIĆ LINIJKE 3 W CMAKELISTS.TXT:
+```bash
+set(CMAKE_CUDA_COMPILER "/usr/local/cuda-12.6/bin/nvcc")
+```
+na odpowiadającą wam opcję (TODO co z tym zrobić żeby każdy nie zmieniał se pod teze)
+
 ## Konfiguracja GoogleTest
 
 Projekt wykorzystuje GoogleTest do testów jednostkowych. Aby skonfigurować tę bibliotekę, wykonaj poniższe kroki:
