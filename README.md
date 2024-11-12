@@ -3,6 +3,11 @@
 Szczegółowa dokumentacja projektu jest dostępna pod adresem:
 [Projekt na Overleaf](https://www.overleaf.com/project/671cdec1be5005f658edc4f1)
 
+## UWAGA
+JECHANE JEST NA LINUX OD 12.11.2024
+
+TERAZ TRZEBA 
+
 ## Konfiguracja GoogleTest
 
 Projekt wykorzystuje GoogleTest do testów jednostkowych. Aby skonfigurować tę bibliotekę, wykonaj poniższe kroki:
