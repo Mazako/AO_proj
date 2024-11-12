@@ -1,7 +1,7 @@
 #!/bin/bash
 
-SOURCE="../cmake-build-debug/MillerRabin.exe"
-DESTINATION="MillerRabin.exe"
+SOURCE="../cmake-build-debug/MillerRabin"
+DESTINATION="MillerRabin"
 
 if [ -f "$SOURCE" ]; then
     cp -f "$SOURCE" "$DESTINATION"
