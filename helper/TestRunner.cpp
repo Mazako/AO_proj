@@ -7,6 +7,7 @@
 #include <cmath>
 
 #include "MillerRabinExecutor.cuh"
+#include "MillerRabinMultipleNumberExecutor.cuh"
 
 void run_m_cpu_tests(uint64_t* numbers, int count, int iterations) {
     std::cout << "----------M_CPU TESTS----------\n";
@@ -53,6 +54,18 @@ void run_gpu_tests(uint64_t* numbers, int count, int iterations) {
     }
 }
 
+void run_batch_gpu_test(uint64_t* numbers, int count, int iterations) {
+    std::cout << "---------BATCH GPU TESTS--------\n";
+    auto const [time, results] = Utils::measure_time<int*>([numbers, count, iterations] ()->int* {
+        return miller_rabin_test_gpu_multiple(numbers, count, iterations);
+    });
+
+    for (int i = 0; i < count; i++) {
+        std::cout << "GPU: Number " << numbers[i] << (results[i] == 1 ? "PRIME\n" : "COMPOSITE\n");
+    }
+    std::cout << "GPU Time: " << time << " ms\n";
+}
+
 void TestRunner::run_tests(uint64_t* numbers, int count, int iterations, const std::string& mode) {
     if (mode == "M_CPU") {
         run_m_cpu_tests(numbers, count, iterations);
@@ -60,7 +73,10 @@ void TestRunner::run_tests(uint64_t* numbers, int count, int iterations, const s
         run_t_cpu_tests(numbers, count, iterations);
     } else if (mode == "GPU") {
         run_gpu_tests(numbers, count, iterations);
-    } else {
-        std::cerr << "Invalid mode. Use 'M_CPU', 'S_CPU', or 'GPU'.\n";
+    } else if (mode == "BATCH_GPU") {
+
+    }
+    else {
+        std::cerr << "Invalid mode. Use 'M_CPU', 'S_CPU', 'GPU', or 'BATCH_GPU'.\n";
     }
 }

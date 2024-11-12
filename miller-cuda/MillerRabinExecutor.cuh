@@ -1,7 +1,7 @@
 #ifndef MILLERRABINEXECUTOR_CUH
 #define MILLERRABINEXECUTOR_CUH
-#include <cuda_runtime.h>
 #include <curand_kernel.h>
+#include <cstdint>
 
 __device__ uint64_t cudaSpecificRandom(curandState* state, uint64_t min, uint64_t max);
 
