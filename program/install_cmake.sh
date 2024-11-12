@@ -2,7 +2,7 @@
 if command -v cmake >/dev/null 2>&1; then
     echo "CMake is installed."
     cmake --version
-else``
+else
   sudo apt remove cmake
   sudo apt update
   sudo apt install -y software-properties-common lsb-release
