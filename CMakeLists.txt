@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 3.29)
+set(CUDA_ARCHITECTURES 70)
+set(CMAKE_CUDA_COMPILER "/usr/local/cuda-12.6/bin/nvcc")
+
 project(MillerRabin LANGUAGES CXX CUDA)
 
 set(CMAKE_CXX_STANDARD 20)
