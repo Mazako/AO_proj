@@ -74,7 +74,7 @@ void TestRunner::run_tests(uint64_t* numbers, int count, int iterations, const s
     } else if (mode == "GPU") {
         run_gpu_tests(numbers, count, iterations);
     } else if (mode == "BATCH_GPU") {
-
+        run_batch_gpu_test(numbers, count, iterations);
     }
     else {
         std::cerr << "Invalid mode. Use 'M_CPU', 'S_CPU', 'GPU', or 'BATCH_GPU'.\n";
