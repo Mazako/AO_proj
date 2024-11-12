@@ -1,5 +1,5 @@
 .idea
 cmake-build-debug/
-third_party/googletest/
+third_party/*
 cmake-build-release-mingw/
 cmake-build-debug-visual-studio/
