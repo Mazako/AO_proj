@@ -6,7 +6,11 @@ Szczegółowa dokumentacja projektu jest dostępna pod adresem:
 ## UWAGA
 JECHANE JEST NA LINUX OD 12.11.2024
 
-TERAZ TRZEBA 
+TERAZ TRZEBA (OCZYWIŚCIE PO ZAINSTALOWANIU CUDA NA LINUX) PODMIENIĆ LINIJKE 3 W CMAKELISTS.TXT:
+```bash
+set(CMAKE_CUDA_COMPILER "/usr/local/cuda-12.6/bin/nvcc")
+```
+na odpowiadającą wam opcję (TODO co z tym zrobić żeby każdy nie zmieniał se pod teze)
 
 ## Konfiguracja GoogleTest
 
