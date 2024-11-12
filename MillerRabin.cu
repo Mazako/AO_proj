@@ -1,77 +1,27 @@
-#include <cstdint>
+#include "FileLoader.h"
+#include "TestRunner.h"
 #include <iostream>
+#include <string>
 #include <vector>
-#include <cuda_runtime.h>
+#include <cstdlib>
 
-#include "MillerRabinExecutor.cuh"
-#include "SingleThreadedMillerRabinTest.h"
-#include "Utils.h"
-#include "CudaRngWarmup.cuh"
-
-void run_tests(const std::vector<uint64_t>& numbers, int iterations) {
-    std::cout << "----------CPU TESTS----------" << std::endl;
-    for (auto number : numbers) {
-        SingleThreadedMillerRabinTest test(number, iterations);
-        const auto [time, value] = Utils::measure_time<bool>([test]()-> bool {return test.is_prime();});
-        std::cout << "Number " << number << (value ? " PRIME" : " COMPOSITE") << std::endl;
-        std::cout << "Time: " << time << " ms\n";
+int main(int argc, char* argv[]) {
+    if (argc != 4) {
+        std::cerr << "Usage: ./MillerRabin.exe <filename> <number_count> <M_CPU/T_CPU/GPU>\n";
+        return 1;
     }
 
-    std::cout << "----------GPU TESTS----------" << std::endl;
+    std::string filename = argv[1];
+    int count = std::atoi(argv[2]);
+    std::string mode = argv[3];
+    int iterations = 100000;
 
-    for (unsigned long long number : numbers) {
-
-        // CUDA events do pomiaru czasu na GPU
-        cudaEvent_t start, stop;
-        cudaEventCreate(&start);
-        cudaEventCreate(&stop);
-
-        cudaEventRecord(start);
-
-        const bool result = miller_rabin_test_gpu(number, iterations);
-
-        cudaEventRecord(stop);
-        cudaEventSynchronize(stop);
-
-        float elapsedTime;
-        cudaEventElapsedTime(&elapsedTime, start, stop);
-
-        int roundedTime = static_cast<int>(std::round(elapsedTime));
-
-        std::cout << "GPU: Number " << number << (result ? " PRIME" : " COMPOSITE") << std::endl;
-        std::cout << "Time: " << roundedTime << " ms\n";
-
-        // Zwalnianie zasobów CUDA
-        cudaEventDestroy(start);
-        cudaEventDestroy(stop);
+    std::vector<uint64_t> numbers = FileLoader::load_numbers_from_file(filename, count);
+    if (numbers.empty()) {
+        std::cerr << "Error: Could not load numbers from file.\n";
+        return 1;
     }
-}
-
-int main() {
-    std::vector<uint64_t> test_numbers = {
-            100000007,              // prime
-            100000037,              // prime
-            100000039,              // prime
-            100000041,              // composite
-            123456789,              // composite
-            4294967311,             // prime
-            67280421310721,         // prime
-            999999000000000003,     // composite
-            999999999989,           // prime
-            67280421310721,         // prime
-            18446744073709551557,   // prime
-            2305843009213693951,    // prime
-            179424673,              // prime
-            32452843,               // prime
-            15485867,               // prime
-            10000000019             // prime
-    };
-
-    // std::cout << "----------GPU RNG generator tests----------" << std::endl;
-    // warmupTestRandomWarmupPerformer(10, 1, 1000000);
-
-    const int iterations = 100000;
-    run_tests(test_numbers, iterations);
+    TestRunner::run_tests(numbers, iterations, mode);
 
     return 0;
 }

@@ -24,6 +24,12 @@ add_executable(MillerRabin MillerRabin.cu
         miller-cuda/MillerRabinExecutor.cuh
         miller-cuda/CudaRngWarmup.cuh
         miller-cuda/CudaRngWarmup.cu
+        miller-rabin/MultiThreadedMillerRabinTest.cpp
+        miller-rabin/MultiThreadedMillerRabinTest.h
+        helper/FileLoader.cpp
+        helper/FileLoader.h
+        helper/TestRunner.cpp
+        helper/TestRunner.h
 )
 
 set_target_properties(MillerRabin PROPERTIES
