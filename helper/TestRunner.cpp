@@ -61,7 +61,7 @@ void run_batch_gpu_test(uint64_t* numbers, int count, int iterations) {
     });
 
     for (int i = 0; i < count; i++) {
-        std::cout << "GPU: Number " << numbers[i] << (results[i] == 1 ? "PRIME\n" : "COMPOSITE\n");
+        std::cout << "GPU: Number " << numbers[i] << (results[i] == 1 ? " PRIME\n" : " COMPOSITE\n");
     }
     std::cout << "GPU Time: " << time << " ms\n";
 }
