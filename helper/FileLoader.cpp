@@ -2,20 +2,24 @@
 #include <fstream>
 #include <iostream>
 
-std::vector<uint64_t> FileLoader::load_numbers_from_file(const std::string& filename, int count) {
+uint64_t* FileLoader::load_numbers_from_file(const std::string& filename, int count) {
     std::ifstream file(filename);
-    std::vector<uint64_t> numbers;
+    if (!file) {
+        std::cerr << "Error: Could not open file " << filename << ".\n";
+        return nullptr;
+    }
+
+    uint64_t* numbers = new uint64_t[count];
     uint64_t number;
     int loaded = 0;
 
     while (file >> number && loaded < count) {
-        numbers.push_back(number);
+        numbers[loaded] = number;
         loaded++;
     }
 
-    if (numbers.size() != count) {
-        std::cerr << "Warning: Expected " << count << " numbers, but found " << numbers.size() << ".\n";
+    if (loaded != count) {
+        std::cerr << "Warning: Expected " << count << " numbers, but found " << loaded << ".\n";
     }
-
     return numbers;
 }
