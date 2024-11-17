@@ -67,6 +67,7 @@ int* miller_rabin_test_gpu_multiple(uint64_t* numbers, int n, int iterations, in
     uint64_t* d_exponent_of_twos;
     uint64_t* d_numbers;
     curandState* d_curand_states;
+    cudaStream_t stream;
 
     cudaMalloc(&d_numbers, arr_size);
     cudaMalloc(&d_results, results_size);
@@ -74,19 +75,21 @@ int* miller_rabin_test_gpu_multiple(uint64_t* numbers, int n, int iterations, in
     cudaMalloc(&d_odd_parts, arr_size);
     cudaMalloc(&d_exponent_of_twos, arr_size);
 
-    cudaMemcpy(d_numbers, numbers, results_size, cudaMemcpyHostToDevice);
+    cudaStreamCreate(&stream);
 
-    init_curand_state_kernel<<< ((n * iterations) + threads_per_block - 1) / threads_per_block, threads_per_block>>>(d_curand_states, d_results, n, iterations);
-    cudaDeviceSynchronize();
+    cudaMemcpyAsync(d_numbers, numbers, results_size, cudaMemcpyHostToDevice, stream);
 
-    decompose_number_kernel<<<(n + threads_per_block - 1) / threads_per_block, threads_per_block>>>(d_numbers, d_exponent_of_twos, d_odd_parts, n);
+    init_curand_state_kernel<<< ((n * iterations) + threads_per_block - 1) / threads_per_block, threads_per_block, 0, stream>>>(d_curand_states, d_results, n, iterations);
+
+    decompose_number_kernel<<<(n + threads_per_block - 1) / threads_per_block, threads_per_block, 0, stream>>>(d_numbers, d_exponent_of_twos, d_odd_parts, n);
 
     auto blockDim = dim3((iterations + threads_per_block - 1) / threads_per_block, n);
-    test_kernel<<<blockDim, threads_per_block>>>(d_numbers, d_exponent_of_twos, d_odd_parts, d_results, d_curand_states, n, iterations);
-    cudaDeviceSynchronize();
+    test_kernel<<<blockDim, threads_per_block, 0, stream>>>(d_numbers, d_exponent_of_twos, d_odd_parts, d_results, d_curand_states, n, iterations);
+    cudaMemcpyAsync(h_results, d_results, results_size, cudaMemcpyDeviceToHost, stream);
 
-    cudaMemcpy(h_results, d_results, results_size, cudaMemcpyDeviceToHost);
+    cudaStreamSynchronize(stream);
 
+    cudaStreamDestroy(stream);
     cudaFree(d_numbers);
     cudaFree(d_results);
     cudaFree(d_curand_states);
