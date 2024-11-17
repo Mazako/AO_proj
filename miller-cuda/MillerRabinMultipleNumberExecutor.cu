@@ -1,9 +1,7 @@
 #include "MillerRabinMultipleNumberExecutor.cuh"
 
 #include <atomic>
-#include <cstdio>
 #include <curand_kernel.h>
-#include <sys/stat.h>
 #include "Utils.h"
 
 __global__ void decompose_number_kernel(uint64_t* numbers, uint64_t* exponent_of_twos, uint64_t* odd_parts, int n) {
