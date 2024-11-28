@@ -1,25 +1,27 @@
 #include "FileLoader.h"
 #include <fstream>
 #include <iostream>
+#include <vector>
 
-uint64_t* FileLoader::load_numbers_from_file(const std::string& filename, int count) {
+std::pair<uint64_t*, int> FileLoader::load_numbers_from_file(const std::string& filename) {
     std::ifstream file(filename);
     if (!file) {
         std::cerr << "Error: Could not open file " << filename << ".\n";
-        return nullptr;
+        return {nullptr, 0};
     }
 
-    uint64_t* numbers = new uint64_t[count];
+    std::vector<uint64_t> numbers;
     uint64_t number;
     int loaded = 0;
 
-    while (file >> number && loaded < count) {
-        numbers[loaded] = number;
+    while (file >> number) {
+        numbers.push_back(number);
         loaded++;
     }
 
-    if (loaded != count) {
-        std::cerr << "Warning: Expected " << count << " numbers, but found " << loaded << ".\n";
-    }
-    return numbers;
+    uint64_t* numbers_arr = new uint64_t[loaded];
+
+    std::copy(numbers.begin(), numbers.end(), numbers_arr);
+
+    return {numbers_arr, loaded};
 }

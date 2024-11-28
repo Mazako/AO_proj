@@ -6,7 +6,7 @@
 
 class FileLoader {
 public:
-    static uint64_t* load_numbers_from_file(const std::string& filename, int count);
+    static std::pair<uint64_t*, int> load_numbers_from_file(const std::string& filename);
 };
 
 #endif // FILELOADER_H
