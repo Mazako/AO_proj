@@ -156,3 +156,25 @@ void CUDART_CB MyCallback(cudaStream_t stream, cudaError_t status, void *userDat
 kernel<<<grid, block, 0, stream>>>(args);
 cudaStreamAddCallback(stream, MyCallback, nullptr, 0);
 ```
+
+# Nsight - zestaw narzędzi do profilowania i debugowania aplikacji GPU
+
+## Profiler Nsight Compute
+
+Profilowanie kernelów CUDA za pomocą ncu pomaga zrozumieć, które części kodu wymagają optymalizacji
+```
+sudo apt install nsight-compute
+
+ncu ./MillerRabin <filename> <number_count> <M_CPU/S_CPU/GPU/BATCH_GPU> <iterations_per_number>
+
+```
+
+### W oparciu o uzyskane informacje można na przykład:
+
+Zwiększyć lub zmniejszyć threads_per_block,
+Dodać więcej __shared__ zmiennych do miller_rabin_kernel,
+Eksperymentować z różnymi flagami kompilacji, aby poprawić wydajność, np. -lineinfo dla szczegółowych informacji w Nsight lub --use_fast_math
+
+### Shared Memory: 
+Można przenieść dane do pamięci współdzielonej w obębie bloku! Jeżeli się używa dużych tablic danych
+Pozwala na szybki dostęp do pamięci

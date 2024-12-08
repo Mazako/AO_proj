@@ -6,7 +6,7 @@
 
 int main(int argc, char* argv[]) {
     if (argc != 4) {
-        std::cerr << "Usage: ./MillerRabin.exe <filename> <M_CPU/S_CPU/GPU/BATCH_GPU> <iterations_per_number>\n";
+        std::cerr << "Usage: ./MillerRabin.exe <filename> <M_CPU/S_CPU/GPU/BATCH_GPU/NSIGHT_GPU> <iterations_per_number>\n";
         return 1;
     }
 
