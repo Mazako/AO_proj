@@ -8,7 +8,6 @@ __global__ void decompose_number_kernel(const uint64_t* numbers, uint64_t* expon
     int idx = threadIdx.x + blockIdx.x * blockDim.x;
     if (idx < n) {
         auto number = numbers[idx];
-        printf("%lu number", number);
         Utils::decompose_number(number - 1, exponent_of_twos[idx], odd_parts[idx]);
     }
 }
