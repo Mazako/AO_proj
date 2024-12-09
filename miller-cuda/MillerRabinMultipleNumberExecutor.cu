@@ -4,10 +4,11 @@
 #include <curand_kernel.h>
 #include "Utils.h"
 
-__global__ void decompose_number_kernel(uint64_t* numbers, uint64_t* exponent_of_twos, uint64_t* odd_parts, int n) {
+__global__ void decompose_number_kernel(const uint64_t* numbers, uint64_t* exponent_of_twos, uint64_t* odd_parts, int n) {
     int idx = threadIdx.x + blockIdx.x * blockDim.x;
     if (idx < n) {
         auto number = numbers[idx];
+        printf("%lu number", number);
         Utils::decompose_number(number - 1, exponent_of_twos[idx], odd_parts[idx]);
     }
 }
@@ -75,7 +76,7 @@ int* miller_rabin_test_gpu_multiple(uint64_t* numbers, int n, int iterations, in
 
     cudaStreamCreate(&stream);
 
-    cudaMemcpyAsync(d_numbers, numbers, results_size, cudaMemcpyHostToDevice, stream);
+    cudaMemcpyAsync(d_numbers, numbers, arr_size, cudaMemcpyHostToDevice, stream);
 
     init_curand_state_kernel<<< ((n * iterations) + threads_per_block - 1) / threads_per_block, threads_per_block, 0, stream>>>(d_curand_states, d_results, n, iterations);
 

@@ -6,10 +6,13 @@
 #include <sys/stat.h>
 
 __device__ inline uint64_t cuda_128_specific_random(curandState* state, uint64_t min, uint64_t max) {
+    if (min > max) {
+        return max;
+    }
     return curand(state) % (max - min + 1) + min;
 }
 
-__global__ void decompose_number_kernel(uint64_t* numbers, uint64_t* exponents_of_twos, uint64_t* odd_parts, int n);
+__global__ void decompose_number_kernel(const uint64_t* numbers, uint64_t* exponents_of_twos, uint64_t* odd_parts, int n);
 
 __global__ void init_curand_state_kernel(curandState* states, int* results, int n, int iterations);
 
