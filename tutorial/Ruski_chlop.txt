@@ -1,0 +1,12 @@
+Idea Utils::overflow_save_mod_mul:
+
+(a * b) % m
+operacje mnożenia można zapisać jako:
+sum_(i=0)^liczba-bitow-w-a (a_i * b * 2^i)
+
+i mieszanki wzrorów (a * b) % m = ((a % m) * (b % m)) % m
+i (a + b) % m = ((a % m) + (b % m)) % m
+
+pierwsza ifoza liczy w sposób bezpieczny b mod m
+
+pozniej petla while robi te sumacje ze wzoru. Element mnożony razy dwa to b
